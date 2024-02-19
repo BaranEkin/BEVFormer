@@ -1,0 +1,332 @@
+
+EPOCH: 1 ___TRAIN LOOP___
+1 0 - Cap: Car overtaking, parking lot, peds, ped exiting car, objects on the ground
+1 0 - Out: hi nu with free with u in - - with be on na, with ka with under cr and
+1 0 - Loss: 7.795591831207275
+
+
+1 2000 - Cap: Narrow street, seveal peds, shadows, turn left, parked motorcycle
+1 2000 - Out: turn workers the, left cars, constructionds left on the construction
+1 2000 - Loss: 4.930467128753662
+
+
+1 4000 - Cap: Parked cars, construction zone
+1 4000 - Out: heavy car, ve cars, heavy red traffic busds
+1 4000 - Loss: 3.292631149291992
+
+
+1 6000 - Cap: Wait at intersection, truck, peds, turn right, parking lot
+1 6000 - Out: parking lots, trucks, wait right,coming atootwalk
+1 6000 - Loss: 2.185399055480957
+
+
+1 8000 - Cap: Turn left, construction, peds, parked bicycle, turn left
+1 8000 - Out: arrive, construction, construction, turn right, parking off scoot, peds
+1 8000 - Loss: 0.9313643574714661
+
+
+1 10000 - Cap: Right bend, parked motorcyle, parked bicycles, parked truck, parking lot
+1 10000 - Out: parked trucks, construction zone, parking lot, park in road, construction zone
+1 10000 - Loss: 2.5157480239868164
+
+
+1 12000 - Cap: Wait at intersection, bridge, jaywalkers, peds on sidewalk, peds crossing crosswalk
+1 12000 - Out: bridge, cars, peds crossingwalk, arrive at intersection
+1 12000 - Loss: 0.6036416292190552
+
+
+1 14000 - Cap: Turning right at intersection, narrow path, cars, pedestrian
+1 14000 - Out: parked construction vehicle, construction zone, construction construction vehicle
+1 14000 - Loss: 2.7920103073120117
+
+
+1 16000 - Cap: Rain, parking lot
+1 16000 - Out: ped, parking lot, rain, parked cars
+1 16000 - Loss: 1.9546451568603516
+
+
+1 18000 - Cap: Rain, wait at intersection, truck
+1 18000 - Out: rain, construction, cross intersection, turning intersection
+1 18000 - Loss: 1.2172768115997314
+
+
+1 20000 - Cap: Rain, parked cars, barriers, peds, parked bicycle, parked scooter, bicycle rack, parking lot, crossing intersection
+1 20000 - Out: rain, parked cars, barriers, parking lot, peds, peds, parking lot, parked scooter
+1 20000 - Loss: 0.8408157229423523
+
+
+1 22000 - Cap: Waiting at red light, peds, motorcycle
+1 22000 - Out: many peds, waiting at red light, many peds, parked car, cross intersection
+1 22000 - Loss: 1.2685716152191162
+
+
+1 24000 - Cap: Parking lot, peds, parked bicycle
+1 24000 - Out: peds, bus stop, parked bicycles, jay
+1 24000 - Loss: 0.6499155759811401
+
+
+1 26000 - Cap: Night, peds, bus
+1 26000 - Out: night, bump, turn right, wait, bus, bus
+1 26000 - Loss: 0.773768424987793
+
+
+1 28000 - Cap: Night, rain, high speed, scooter, dense traffic at other lane
+1 28000 - Out: night, bus stop, high speed, rain, scooter
+1 28000 - Loss: 0.6850886344909668
+
+
+
+EPOCH: 1 ___VAL LOOP___
+1 0 - Cap: Construction zone, stopped at red light, parked cars
+1 0 - Out: night, rain, turn right, ped, bus stop
+1 0 - Loss: 3.46663761138916
+
+
+1 1000 - Cap: Oncoming cyclist, cars, wait at intersection
+1 1000 - Out: night, bus, rain, parked car, bus stop
+1 1000 - Loss: 3.3302719593048096
+
+
+1 2000 - Cap: Bendy bus, school bus, parking lot, turn left, parked bus, overtake truck
+1 2000 - Out: night, bus, rain, peds, bus stop
+1 2000 - Loss: 4.193260669708252
+
+
+1 3000 - Cap: Wait at intersection, turning left, cars turning together, parking lot
+1 3000 - Out: night, ped in the turn right, low traffic light, bus stop
+1 3000 - Loss: 4.1095194816589355
+
+
+1 4000 - Cap: Rain, parked cars, trucks, peds crossing crosswalk, peds, parked bicycles, bicycle rack
+1 4000 - Out: night, peds, rain, bus stop
+1 4000 - Loss: 2.4271090030670166
+
+
+1 5000 - Cap: Bus, peds, truck, turn left
+1 5000 - Out: night, bus stop, bus, peds, turn right, bus stop
+1 5000 - Loss: 2.3363289833068848
+
+
+1 6000 - Cap: Night, scooters, turn left, dense traffic
+1 6000 - Out: night, rain, rain, bus stop, bus, peds, peds in water
+1 6000 - Loss: 1.6397653818130493
+
+
+
+EPOCH: 2 ___TRAIN LOOP___
+2 0 - Cap: Car overtaking, parking lot, peds, ped exiting car, objects on the ground
+2 0 - Out: night, rain, scooters, bus stop
+2 0 - Loss: 3.4538302421569824
+
+
+2 2000 - Cap: Narrow street, seveal peds, shadows, turn left, parked motorcycle
+2 2000 - Out: construction, barriers, trash can turn out, construction vehicles, parked cars, turn left
+2 2000 - Loss: 3.138601303100586
+
+
+2 4000 - Cap: Parked cars, construction zone
+2 4000 - Out: heavy traffic flow, cars and many moving peds
+2 4000 - Loss: 1.9132047891616821
+
+
+2 6000 - Cap: Wait at intersection, truck, peds, turn right, parking lot
+2 6000 - Out: wait at intersection, turn left, parking lots
+2 6000 - Loss: 1.033469796180725
+
+
+2 8000 - Cap: Turn left, construction, peds, parked bicycle, turn left
+2 8000 - Out: construction, construction, lane change, peds, turn left, construction zone
+2 8000 - Loss: 0.6005753874778748
+
+
+2 10000 - Cap: Right bend, parked motorcyle, parked bicycles, parked truck, parking lot
+2 10000 - Out: parked cars, construction zone, roundabout junction, parked trucks
+2 10000 - Loss: 1.3540114164352417
+
+
+2 12000 - Cap: Wait at intersection, bridge, jaywalkers, peds on sidewalk, peds crossing crosswalk
+2 12000 - Out: cones, peds on sidewalk, parked cars, peds on sidewalk, arrive at intersection, ped crossing crosswalk
+2 12000 - Loss: 0.6459685564041138
+
+
+2 14000 - Cap: Turning right at intersection, narrow path, cars, pedestrian
+2 14000 - Out: parked cars, pedestrian, construction zones, construction vehicle, pedestrian, truck overtaking us
+2 14000 - Loss: 2.2673566341400146
+
+
+2 16000 - Cap: Rain, parking lot
+2 16000 - Out: rain, parked cars, parking lot, lane change
+2 16000 - Loss: 1.684216856956482
+
+
+2 18000 - Cap: Rain, wait at intersection, truck
+2 18000 - Out: rain, cross intersection, turn right, parking lot
+2 18000 - Loss: 0.9416683912277222
+
+
+2 20000 - Cap: Rain, parked cars, barriers, peds, parked bicycle, parked scooter, bicycle rack, parking lot, crossing intersection
+2 20000 - Out: rain, parked cars, parking lot, peds, parking lot, bicycle rack, barriers, barriers
+2 20000 - Loss: 0.7968036532402039
+
+
+2 22000 - Cap: Waiting at red light, peds, motorcycle
+2 22000 - Out: many peds, stopped car, parked loaded on the ground, turn left
+2 22000 - Loss: 0.9705792665481567
+
+
+2 24000 - Cap: Parking lot, peds, parked bicycle
+2 24000 - Out: many peds, cars, peds walking in street
+2 24000 - Loss: 0.4195327162742615
+
+
+2 26000 - Cap: Night, peds, bus
+2 26000 - Out: night, bus, wait, bump, arrive
+2 26000 - Loss: 0.8363091349601746
+
+
+2 28000 - Cap: Night, rain, high speed, scooter, dense traffic at other lane
+2 28000 - Out: night, rain, high speed of car, scooter
+2 28000 - Loss: 0.29389432072639465
+
+
+
+EPOCH: 2 ___VAL LOOP___
+2 0 - Cap: Construction zone, stopped at red light, parked cars
+2 0 - Out: night, rain, bus, peds, bus stop
+2 0 - Loss: 3.322021484375
+
+
+2 1000 - Cap: Oncoming cyclist, cars, wait at intersection
+2 1000 - Out: night, rain, buses, peds, bus stop
+2 1000 - Loss: 3.639813184738159
+
+
+2 2000 - Cap: Bendy bus, school bus, parking lot, turn left, parked bus, overtake truck
+2 2000 - Out: night, rain, bus, turn right, bus stop
+2 2000 - Loss: 4.003706455230713
+
+
+2 3000 - Cap: Wait at intersection, turning left, cars turning together, parking lot
+2 3000 - Out: night, rain, bus, peds, bump, parked car
+2 3000 - Loss: 4.851383686065674
+
+
+2 4000 - Cap: Rain, parked cars, trucks, peds crossing crosswalk, peds, parked bicycles, bicycle rack
+2 4000 - Out: night, rain, bus, bus stop, peds, turn right, bus
+2 4000 - Loss: 2.672194719314575
+
+
+2 5000 - Cap: Bus, peds, truck, turn left
+2 5000 - Out: night, rain, bus, turn right, peds, lightning
+2 5000 - Loss: 2.613666296005249
+
+
+2 6000 - Cap: Night, scooters, turn left, dense traffic
+2 6000 - Out: night, rain, peds, bus stop at the other lane
+2 6000 - Loss: 1.9430161714553833
+
+
+
+EPOCH: 3 ___TRAIN LOOP___
+3 0 - Cap: Car overtaking, parking lot, peds, ped exiting car, objects on the ground
+3 0 - Out: night, rain, bus stop, turn right, peds, rain
+3 0 - Loss: 2.4110703468322754
+
+
+3 2000 - Cap: Narrow street, seveal peds, shadows, turn left, parked motorcycle
+3 2000 - Out: two parked trucks, overtake, turn left
+3 2000 - Loss: 2.7942943572998047
+
+
+3 4000 - Cap: Parked cars, construction zone
+3 4000 - Out: heavy traffic flow, bus, overtake bus, stopped at red light
+3 4000 - Loss: 2.019172191619873
+
+
+3 6000 - Cap: Wait at intersection, truck, peds, turn right, parking lot
+3 6000 - Out: turn left, parking lots, oncoming special electrical vehicle
+3 6000 - Loss: 0.5891581773757935
+
+
+3 8000 - Cap: Turn left, construction, peds, parked bicycle, turn left
+3 8000 - Out: parked cars, turn left, person sitting on top of a truck
+3 8000 - Loss: 0.30057454109191895
+
+
+3 10000 - Cap: Right bend, parked motorcyle, parked bicycles, parked truck, parking lot
+3 10000 - Out: construction zone, roundabout junction, peds, roundabout parking lot
+3 10000 - Loss: 0.9642658233642578
+
+
+3 12000 - Cap: Wait at intersection, bridge, jaywalkers, peds on sidewalk, peds crossing crosswalk
+3 12000 - Out: cars, peds on sidewalk, construction vehicle, arrive at intersection, peds crossing crosswalk
+3 12000 - Loss: 0.4424269199371338
+
+
+3 14000 - Cap: Turning right at intersection, narrow path, cars, pedestrian
+3 14000 - Out: construction zones, construction vehicle, stopped at the intersection
+3 14000 - Loss: 1.4343940019607544
+
+
+3 16000 - Cap: Rain, parking lot
+3 16000 - Out: rain, parked vehicles, parking lot, bendy bus
+3 16000 - Loss: 1.607901930809021
+
+
+3 18000 - Cap: Rain, wait at intersection, truck
+3 18000 - Out: rain, parked car, construction, wait at intersection
+3 18000 - Loss: 0.6940712928771973
+
+
+3 20000 - Cap: Rain, parked cars, barriers, peds, parked bicycle, parked scooter, bicycle rack, parking lot, crossing intersection
+3 20000 - Out: rain, parking lot, parked cars, bicycle racks, parked scooter, barriers, turn left, bicycle rack
+3 20000 - Loss: 0.6172112822532654
+
+
+3 22000 - Cap: Waiting at red light, peds, motorcycle
+3 22000 - Out: many peds, parked vehicles, waiting at red light
+3 22000 - Loss: 0.5435904264450073
+
+
+3 24000 - Cap: Parking lot, peds, parked bicycle
+3 24000 - Out: buses, peds, parked bicycle, ped
+3 24000 - Loss: 0.3570185899734497
+
+
+3 26000 - Cap: Night, peds, bus
+3 26000 - Out: night, bus, wait, wait, scooter
+3 26000 - Loss: 0.6486760377883911
+
+
+3 28000 - Cap: Night, rain, high speed, scooter, dense traffic at other lane
+3 28000 - Out: night, rain, high speed, scooter, scooter in garage
+3 28000 - Loss: 0.3143520653247833
+
+
+
+EPOCH: 3 ___VAL LOOP___
+3 0 - Cap: Construction zone, stopped at red light, parked cars
+3 0 - Out: night, peds, bus, parked cars, trash cans
+3 0 - Loss: 3.408811092376709
+
+
+3 1000 - Cap: Oncoming cyclist, cars, wait at intersection
+3 1000 - Out: night, rain, bus, bus stop, turn right, peds, bus
+3 1000 - Loss: 3.522676467895508
+
+
+3 2000 - Cap: Bendy bus, school bus, parking lot, turn left, parked bus, overtake truck
+3 2000 - Out: night, rain, bus, turn right, turn right
+3 2000 - Loss: 3.179732084274292
+
+
+3 3000 - Cap: Wait at intersection, turning left, cars turning together, parking lot
+3 3000 - Out: night, rain, bus, turn right, peds, ped with pet
+3 3000 - Loss: 4.753282070159912
+
+
+3 4000 - Cap: Rain, parked cars, trucks, peds crossing crosswalk, peds, parked bicycles, bicycle rack
+3 4000 - Out: night, bus, turn right, peds, bus stop
+3 4000 - Loss: 2.6942148208618164
+
+
