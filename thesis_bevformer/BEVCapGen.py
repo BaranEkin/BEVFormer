@@ -13,7 +13,7 @@ class BEVCapGen(nn.Module):
         tokenizer,
         bev_feature_size,
         decoder_hidden_size,
-        prompt="a picture of ",
+        prompt="",
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
     ):
         super().__init__()
@@ -40,13 +40,6 @@ class BEVCapGen(nn.Module):
 
     def forward(self, data, caption):
 
-        """
-        data["img_metas"] = data["img_metas"].data
-        data["img_metas"] = [list(data["img_metas"][0][0].values())]
-        data["img"] = data["img"].data[0].to(self.device)
-        data["gt_bboxes_3d"] = data["gt_bboxes_3d"].data[0]
-        data["gt_labels_3d"] = [data["gt_labels_3d"].data[0][0].to(self.device)]
-        """
         new_data = {}
         new_data["img_metas"] = data["img_metas"][0].data
         new_data["img"] = [data["img"][0].data[0].to(self.device)]
