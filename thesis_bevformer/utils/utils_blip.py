@@ -914,7 +914,7 @@ class BertLMHeadModel(BertPreTrainedModel):
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
             cross_attentions=outputs.cross_attentions,
-        )
+        ), sequence_output
 
     def prepare_inputs_for_generation(self, input_ids, past=None, attention_mask=None, **model_kwargs):
         input_shape = input_ids.shape

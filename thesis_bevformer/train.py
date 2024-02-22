@@ -9,7 +9,7 @@ from thesis_bevformer.utils.utils_bevformer import build_bevformer, build_data_l
 from thesis_bevformer.BEVCapGen import BEVCapGen
 
 
-def validate(model, nusc, dataloader, ep, writer, log_file, log_every=1000):
+def evaluate(model, nusc, dataloader, ep, writer, log_file, log_every=1000):
     
     model.eval()
     with torch.no_grad():
@@ -66,7 +66,7 @@ def train(model, nusc, dataloader_train, dataloader_val, optimizer, writer, log_
             train_step(model, nusc, data, optimizer, epoch, i, global_step, writer, log_file)
             global_step += 1
         
-        validate(model, nusc, dataloader_val, epoch, writer, log_file)
+        evaluate(model, nusc, dataloader_val, epoch, writer, log_file)
 
 def main():
     torch.cuda.empty_cache()
@@ -93,7 +93,8 @@ def main():
         text_decoder=blip_lm_head,
         tokenizer=blip_tokenizer,
         bev_feature_size=256,
-        decoder_hidden_size=med_config.encoder_width,
+        decoder_hidden_size=med_config.hidden_size,
+        ca_bev_width=med_config.encoder_width,
         device="cuda"
         )
 

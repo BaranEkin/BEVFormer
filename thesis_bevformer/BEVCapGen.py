@@ -12,7 +12,8 @@ class BEVCapGen(nn.Module):
         text_decoder,
         tokenizer,
         bev_feature_size,
-        decoder_hidden_size,
+        hidden_size,
+        encoder_width,
         prompt="",
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
     ):
@@ -24,15 +25,18 @@ class BEVCapGen(nn.Module):
         for param in self.bev_encoder.parameters():
             param.requires_grad = False
 
-        # FC layer to map BEV feature size to text decoder transformer hidden size
-        self.bev_feature_mapper = nn.Sequential(
-            nn.Linear(bev_feature_size, decoder_hidden_size), 
-            nn.ReLU()
-            ).to(self.device)
+        # FC layer to map BEV feature size to cross attention width
+        self.bev_projector = nn.Linear(bev_feature_size, encoder_width).to(self.device)
+
+        # self.text_projector = nn.Linear(hidden_size, encoder_width).to(self.device)
+        # self.logit_scale = nn.Parameter(0.07*torch.ones([]))  ???
 
         # Text decoder and tokenizer
         self.text_decoder = text_decoder.to(self.device)
         self.tokenizer = tokenizer
+
+        # BEV-Text Matching Head
+        self.btm_head = nn.Linear(hidden_size, 2).to(self.device)
         
         # Prompt
         self.prompt = prompt
@@ -46,7 +50,7 @@ class BEVCapGen(nn.Module):
 
 
         bev_embeds = self.bev_encoder(return_loss=False, rescale=True, only_bev_embed=True, **new_data)
-        bev_embeds = self.bev_feature_mapper(bev_embeds)
+        bev_embeds = self.bev_projector(bev_embeds)
         
         bev_atts = torch.ones(bev_embeds.size()[:-1], dtype=torch.long).to(self.device)
 
@@ -64,7 +68,7 @@ class BEVCapGen(nn.Module):
         )
         decoder_targets[:, : self.prompt_length] = -100
 
-        decoder_output = self.text_decoder(
+        decoder_output, sequence_output = self.text_decoder(
             text.input_ids,
             attention_mask=text.attention_mask,
             encoder_hidden_states=bev_embeds,
@@ -72,6 +76,17 @@ class BEVCapGen(nn.Module):
             labels=decoder_targets,
             return_dict=True,
         )
+
+        """
+        text_embeds = self.text_projector(sequence_output)
+        
+        text_embeds = text_embeds / text_embeds.norm(dim=1, keepdim=True)
+        bev_embeds = bev_embeds / bev_embeds.norm(dim=1, keepdim=True)
+
+        logits_per_bev = bev_embeds @ text_embeds.t()
+        logits_per_text = logits_per_bev.t()
+        """
+        
 
         return {"logits": decoder_output.logits, "labels": decoder_targets, "loss": decoder_output.loss}
 
@@ -87,7 +102,7 @@ class BEVCapGen(nn.Module):
         new_data["img"] = [data["img"][0].data[0].to(self.device)]
         
         bev_embeds = self.bev_encoder(return_loss=False, rescale=True, only_bev_embed=True, **new_data)
-        bev_embeds = self.bev_feature_mapper(bev_embeds)
+        bev_embeds = self.bev_projector(bev_embeds)
         
 
         bev_atts = torch.ones(bev_embeds.size()[:-1], dtype=torch.long).to(self.device)
