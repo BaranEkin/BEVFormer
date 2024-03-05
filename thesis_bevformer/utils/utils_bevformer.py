@@ -86,11 +86,14 @@ def build_bevformer(config, checkpoint):
 
     return model
 
-def build_data_loader(config):
+def build_data_loader(config, mode):
     
     # build the dataloader
     cfg = Config.fromfile(config)
-    dataset = build_dataset(cfg.data.train_blip)
+    if mode == "train":
+        dataset = build_dataset(cfg.data.train_blip)
+    else:
+        dataset = build_dataset(cfg.data.val_blip)
         
     data_loader = build_dataloader(
         dataset,
@@ -98,7 +101,6 @@ def build_data_loader(config):
         workers_per_gpu=cfg.data.workers_per_gpu,
         dist=True,
         shuffle=False,
-        nonshuffler_sampler=cfg.data.nonshuffler_sampler,
     )
 
     return data_loader

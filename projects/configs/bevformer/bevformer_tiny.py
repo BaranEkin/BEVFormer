@@ -239,6 +239,11 @@ data = dict(
                ann_file=data_root + 'nuscenes_infos_temporal_train.pkl',
                pipeline=test_pipeline, bev_size=(bev_h_, bev_w_),
                classes=class_names, modality=input_modality, test_mode=True),
+    val_blip=dict(type=dataset_type,
+               data_root=data_root,
+               ann_file=data_root + 'nuscenes_infos_temporal_val.pkl',
+               pipeline=test_pipeline, bev_size=(bev_h_, bev_w_),
+               classes=class_names, modality=input_modality, test_mode=True),
     shuffler_sampler=dict(type='DistributedGroupSampler'),
     nonshuffler_sampler=dict(type='DistributedSampler')
 )

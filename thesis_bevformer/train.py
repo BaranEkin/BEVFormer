@@ -72,6 +72,7 @@ def main():
     torch.cuda.empty_cache()
 
     # NuScenes for loading the scene captions
+    # nuscenes_trainval = None
     nuscenes_trainval = NuScenes(version='v1.0-trainval', dataroot='./data/nuscenes', verbose=True)
 
     # BEVFormer config, model and data laoders
@@ -93,8 +94,8 @@ def main():
         text_decoder=blip_lm_head,
         tokenizer=blip_tokenizer,
         bev_feature_size=256,
-        decoder_hidden_size=med_config.hidden_size,
-        ca_bev_width=med_config.encoder_width,
+        hidden_size=med_config.hidden_size,
+        encoder_width=med_config.encoder_width,
         device="cuda"
         )
 
@@ -113,7 +114,8 @@ def main():
             dataloader_val=val_loader,
             optimizer=adam_w,
             writer=sum_writer,
-            log_file=log)
+            log_file=log,
+            max_epoch=5)
 
 if __name__ == "__main__":
     main()
