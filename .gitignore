@@ -136,3 +136,4 @@ dmypy.json
 .pyre/
 
 thesis_bevformer/models/
+thesis_bevformer/data/

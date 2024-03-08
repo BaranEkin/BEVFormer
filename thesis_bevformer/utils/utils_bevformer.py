@@ -12,6 +12,22 @@ import os
 from mmdet3d.datasets import build_dataset
 from projects.mmdet3d_plugin.datasets.builder import build_dataloader
 
+import copy
+import platform
+import random
+from functools import partial
+
+import numpy as np
+from mmcv.parallel import collate
+from mmcv.runner import get_dist_info
+from mmcv.utils import Registry, build_from_cfg
+from torch.utils.data import DataLoader
+
+from mmdet.datasets.samplers import GroupSampler
+from projects.mmdet3d_plugin.datasets.samplers.group_sampler import DistributedGroupSampler
+from projects.mmdet3d_plugin.datasets.samplers.distributed_sampler import DistributedSampler
+from projects.mmdet3d_plugin.datasets.samplers.sampler import build_sampler
+
 
 def build_bevformer(config, checkpoint):
 
@@ -95,12 +111,16 @@ def build_data_loader(config, mode):
     else:
         dataset = build_dataset(cfg.data.val_blip)
         
-    data_loader = build_dataloader(
-        dataset,
-        samples_per_gpu=1,
-        workers_per_gpu=cfg.data.workers_per_gpu,
-        dist=True,
-        shuffle=False,
-    )
+    samples_per_gpu = cfg.data.samples_per_gpu
+    num_workers = cfg.data.workers_per_gpu
+    batch_size = samples_per_gpu
 
+    data_loader = DataLoader(dataset,
+                             batch_size=batch_size,
+                             shuffle=True,
+                             num_workers=num_workers,
+                             collate_fn=partial(collate, samples_per_gpu=samples_per_gpu),
+                             pin_memory=False,
+                             worker_init_fn=None,
+                             persistent_workers=(num_workers > 0))
     return data_loader

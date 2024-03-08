@@ -3,6 +3,7 @@ warnings.filterwarnings("ignore")
 
 import torch
 from torch import nn
+import torch.nn.functional as F
 import os
 
 class BEVCapGen(nn.Module):
@@ -12,6 +13,7 @@ class BEVCapGen(nn.Module):
         text_decoder,
         tokenizer,
         bev_feature_size,
+        bev_area,
         hidden_size,
         encoder_width,
         prompt="",
@@ -20,16 +22,21 @@ class BEVCapGen(nn.Module):
         super().__init__()
         self.device = device
 
+        self.bev_size = bev_feature_size * bev_area
+
         # Freezing the BEV encoder
         self.bev_encoder = bev_encoder.to(self.device)
         for param in self.bev_encoder.parameters():
             param.requires_grad = False
 
         # FC layer to map BEV feature size to cross attention width
-        self.bev_projector = nn.Linear(bev_feature_size, encoder_width).to(self.device)
+        self.bev_feature_mapper = nn.Linear(bev_feature_size, encoder_width).to(self.device)
 
-        # self.text_projector = nn.Linear(hidden_size, encoder_width).to(self.device)
-        # self.logit_scale = nn.Parameter(0.07*torch.ones([]))  ???
+        # Projectors for bev and text to a common dimension for contrastive loss
+        projection_dim = 512
+        self.bev_projector = nn.Linear(self.bev_size, projection_dim).to(self.device)
+        self.text_projector = nn.Linear(hidden_size, projection_dim).to(self.device)
+        self.logit_scale = nn.Parameter(torch.tensor(2.6592)).to(self.device)
 
         # Text decoder and tokenizer
         self.text_decoder = text_decoder.to(self.device)
@@ -50,9 +57,9 @@ class BEVCapGen(nn.Module):
 
 
         bev_embeds = self.bev_encoder(return_loss=False, rescale=True, only_bev_embed=True, **new_data)
-        bev_embeds = self.bev_projector(bev_embeds)
+        bev_features_for_ca = self.bev_feature_mapper(bev_embeds)
         
-        bev_atts = torch.ones(bev_embeds.size()[:-1], dtype=torch.long).to(self.device)
+        bev_atts = torch.ones(bev_features_for_ca.size()[:-1], dtype=torch.long).to(self.device)
 
         text = self.tokenizer(caption,
             padding="longest",
@@ -68,27 +75,49 @@ class BEVCapGen(nn.Module):
         )
         decoder_targets[:, : self.prompt_length] = -100
 
-        decoder_output, sequence_output = self.text_decoder(
+        decoder_output, text_embeds = self.text_decoder(
             text.input_ids,
             attention_mask=text.attention_mask,
-            encoder_hidden_states=bev_embeds,
+            encoder_hidden_states=bev_features_for_ca,
             encoder_attention_mask=bev_atts,
             labels=decoder_targets,
             return_dict=True,
         )
 
-        """
-        text_embeds = self.text_projector(sequence_output)
+        # IMAGE(BEV) - TEXT CONTRASTIVE LOSS --------------------------
         
-        text_embeds = text_embeds / text_embeds.norm(dim=1, keepdim=True)
-        bev_embeds = bev_embeds / bev_embeds.norm(dim=1, keepdim=True)
+        batch_size = bev_embeds.shape[0]
+        bev_embeds = bev_embeds.reshape(batch_size, self.bev_size)
+        bev_embeds_projected = self.bev_projector(bev_embeds)
 
-        logits_per_bev = bev_embeds @ text_embeds.t()
+        text_mean_embeds = torch.mean(text_embeds, dim=1, keepdim=True).squeeze()
+        text_embeds_projected = self.text_projector(text_mean_embeds)
+        
+        
+        text_embeds_projected = text_embeds_projected / text_embeds_projected.norm(dim=1, keepdim=True)
+        bev_embeds_projected = bev_embeds_projected / bev_embeds_projected.norm(dim=1, keepdim=True)
+
+        logit_scale = self.logit_scale.exp()
+        logits_per_bev = (bev_embeds_projected @ text_embeds_projected.t()) * logit_scale
         logits_per_text = logits_per_bev.t()
-        """
+
+        cl_targets = torch.arange(batch_size, dtype=torch.long).to(self.device)
+        contrastive_loss = (F.cross_entropy(logits_per_bev, cl_targets) 
+                            + F.cross_entropy(logits_per_text, cl_targets)) / 2
+        
+        # -----------------------------------------------------------------
         
 
-        return {"logits": decoder_output.logits, "labels": decoder_targets, "loss": decoder_output.loss}
+        return {"contrastive_loss": contrastive_loss,
+                "lm_loss": decoder_output.loss}
+    
+    def get_bev_embeds(self, data):
+        new_data = {}
+        new_data["img_metas"] = data["img_metas"][0].data
+        new_data["img"] = [data["img"][0].data[0].to(self.device)]
+
+        bev_embeds = self.bev_encoder(return_loss=False, rescale=True, only_bev_embed=True, **new_data)
+        return bev_embeds
 
     def generate(
         self,
@@ -102,7 +131,7 @@ class BEVCapGen(nn.Module):
         new_data["img"] = [data["img"][0].data[0].to(self.device)]
         
         bev_embeds = self.bev_encoder(return_loss=False, rescale=True, only_bev_embed=True, **new_data)
-        bev_embeds = self.bev_projector(bev_embeds)
+        bev_embeds = self.bev_feature_mapper(bev_embeds)
         
 
         bev_atts = torch.ones(bev_embeds.size()[:-1], dtype=torch.long).to(self.device)

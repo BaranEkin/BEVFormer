@@ -40,10 +40,12 @@ def generate(model, data, caption, loss, ep, step, log_file):
 
 def train_step(model, nusc, data, optimizer, ep, step, g_step, writer, log_file, log_every=5000):
     
-    scene_token = data["img_metas"][0].data[0][0]["scene_token"]
-    caption = nusc.get("scene", scene_token)["description"]
+    # scene_token = data["img_metas"][0].data[0][0]["scene_token"]
+    scene_tokens = [img_metas["scene_token"] for img_metas in data["img_metas"][0].data[0]]
+    # captions = [nusc.get("scene", scene_token)["description"] for scene_token in scene_tokens]
+    captions = ["Test caption", "A red car is passing by", "Just to test"]
 
-    result = model(data, caption)
+    result = model(data, captions)
     loss = result["loss"]
 
     optimizer.zero_grad()
@@ -72,8 +74,8 @@ def main():
     torch.cuda.empty_cache()
 
     # NuScenes for loading the scene captions
-    # nuscenes_trainval = None
-    nuscenes_trainval = NuScenes(version='v1.0-trainval', dataroot='./data/nuscenes', verbose=True)
+    nuscenes_trainval = None
+    # nuscenes_trainval = NuScenes(version='v1.0-trainval', dataroot='./data/nuscenes', verbose=True)
 
     # BEVFormer config, model and data laoders
     bevformer_cfg = "./projects/configs/bevformer/bevformer_tiny.py"
@@ -94,6 +96,7 @@ def main():
         text_decoder=blip_lm_head,
         tokenizer=blip_tokenizer,
         bev_feature_size=256,
+        bev_area=50*50,
         hidden_size=med_config.hidden_size,
         encoder_width=med_config.encoder_width,
         device="cuda"

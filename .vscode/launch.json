@@ -11,7 +11,7 @@
             "args": [
                 "--nproc_per_node=1",
                 "--master_port=29503",
-                "./thesis_bevformer/train.py",
+                "./thesis_bevformer/generate_bev_features.py",
                 "${workspaceFolder}/projects/configs/bevformer/bevformer_tiny.py",
                 "${workspaceFolder}/ckpts/bevformer_tiny_epoch_24.pth",
                 "--launcher",
