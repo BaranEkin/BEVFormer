@@ -1,9 +1,8 @@
 {
     "version": "0.2.0",
     "configurations": [
-
         {
-            "name": "Test Debugging",
+            "name": "BEV Features Debugging",
             "type": "python",
             "python": "/root/miniconda3/envs/bin/python",
             "request": "launch",
@@ -18,6 +17,27 @@
                 "pytorch",
                 "--eval",
                 "bbox",
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"
+            },
+            "console": "integratedTerminal",
+            "stopOnEntry": false,
+        },
+        {
+            "name": "Train Debugging",
+            "type": "python",
+            "python": "/root/miniconda3/envs/bin/python",
+            "request": "launch",
+            "module": "torch.distributed.launch",
+            "args": [
+                "--nproc_per_node=1",
+                "--master_port=29503",
+                "./tools/train.py",
+                "${workspaceFolder}/projects/configs/bevformer/bevformer_tiny.py",
+                "--launcher",
+                "pytorch",
             ],
             "cwd": "${workspaceFolder}",
             "env": {

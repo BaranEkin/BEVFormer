@@ -139,7 +139,7 @@ class BEVFormer(MVXTwoStageDetector):
         dummy_metas = None
         return self.forward_test(img=img, img_metas=[[dummy_metas]])
 
-    def forward(self, return_loss=True, **kwargs):
+    def forward(self, return_loss=True, only_bev=False, **kwargs):
         """Calls either forward_train or forward_test depending on whether
         return_loss=True.
         Note this setting will change the expected inputs. When
@@ -149,7 +149,11 @@ class BEVFormer(MVXTwoStageDetector):
         list[list[dict]]), with the outer list indicating test time
         augmentations.
         """
-        if return_loss:
+        if only_bev:
+            self.eval()
+            with torch.no_grad():
+                return self.forward_bev_embed(**kwargs)
+        elif return_loss:
             return self.forward_train(**kwargs)
         else:
             return self.forward_test(**kwargs)
@@ -163,16 +167,16 @@ class BEVFormer(MVXTwoStageDetector):
             prev_bev = None
             bs, len_queue, num_cams, C, H, W = imgs_queue.shape
             imgs_queue = imgs_queue.reshape(bs*len_queue, num_cams, C, H, W)
-            img_feats_list = self.extract_feat(img=imgs_queue, len_queue=len_queue)
-            for i in range(len_queue):
+            img_feats_list = self.extract_feat(img=imgs_queue, len_queue=len_queue) # [1* tensor(1, 2, 6, 256, 15, 25)]
+            for i in range(len_queue): 
                 img_metas = [each[i] for each in img_metas_list]
                 if not img_metas[0]['prev_bev_exists']:
                     prev_bev = None
                 # img_feats = self.extract_feat(img=img, img_metas=img_metas)
-                img_feats = [each_scale[:, i] for each_scale in img_feats_list]
+                img_feats = [each_scale[:, i] for each_scale in img_feats_list] # [tensor(1, 6, 256, 15, 25)]
                 prev_bev = self.pts_bbox_head(
-                    img_feats, img_metas, prev_bev, only_bev=True)
-            self.train()
+                    img_feats, img_metas, prev_bev, only_bev=True) # !!!prev_bev gets updated len_queue times!!!
+            # self.train() # BARAN (For bev only)
             return prev_bev
 
     @auto_fp16(apply_to=('img', 'points'))
@@ -212,7 +216,6 @@ class BEVFormer(MVXTwoStageDetector):
         Returns:
             dict: Losses of different branches.
         """
-        
         len_queue = img.size(1)
         prev_img = img[:, :-1, ...]
         img = img[:, -1, ...]
@@ -258,11 +261,6 @@ class BEVFormer(MVXTwoStageDetector):
         else:
             img_metas[0][0]['can_bus'][-1] = 0
             img_metas[0][0]['can_bus'][:3] = 0
-
-        # BARAN ------------------------------------------------------------------------------
-        if kwargs.get("only_bev_embed"):
-            return self.forward_bev_embed(img[0], img_metas[0], prev_bev=self.prev_frame_info['prev_bev'])
-        # BARAN ------------------------------------------------------------------------------
         
         new_prev_bev, bbox_results = self.simple_test(
             img_metas[0], img[0], prev_bev=self.prev_frame_info['prev_bev'], **kwargs)
@@ -296,9 +294,19 @@ class BEVFormer(MVXTwoStageDetector):
         return new_prev_bev, bbox_list
 
     # BARAN ------------------------------------------------------------------------------
-    def forward_bev_embed(self, img, img_metas, prev_bev=None):
-        """Return bev embeddings only. (Thesis)"""
+    def forward_bev_embed(self, img_metas=None,img=None):
+        """Return temporal bev embeddings only. (Thesis)"""
 
+        len_queue = img.size(1)
+        prev_img = img[:, :-1, ...]
+        img = img[:, -1, ...]
+
+        prev_img_metas = copy.deepcopy(img_metas)
+        prev_bev = self.obtain_history_bev(prev_img, prev_img_metas)
+
+        img_metas = [each[len_queue-1] for each in img_metas]
+        if not img_metas[0]['prev_bev_exists']:
+            prev_bev = None
         img_feats = self.extract_feat(img=img, img_metas=img_metas)
-        bev_embed = self.pts_bbox_head(img_feats, img_metas, prev_bev=prev_bev, only_bev=True)
-        return bev_embed
+        outs = self.pts_bbox_head(img_feats, img_metas, prev_bev)
+        return outs

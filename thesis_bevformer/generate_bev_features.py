@@ -20,8 +20,8 @@ def main():
     bevformer_cfg = "./projects/configs/bevformer/bevformer_tiny.py"
     bevformer_ckpt = "./ckpts/bevformer_tiny_epoch_24.pth"
     bevformer = build_bevformer(bevformer_cfg, bevformer_ckpt)
-    train_loader = build_data_loader(bevformer_cfg, mode="train")
-    # val_loader = build_data_loader(bevformer_cfg, mode="val")
+    # train_loader = build_data_loader(bevformer_cfg, mode="train")
+    val_loader = build_data_loader(bevformer_cfg, mode="val")
 
     # BLIP configs, model and tokenizer
     med_config_path = "./thesis_bevformer/configs/med_config.json"
@@ -38,16 +38,17 @@ def main():
         bev_area=50*50,
         hidden_size=med_config.hidden_size,
         encoder_width=med_config.encoder_width,
-        device="cuda"
+        device="cuda",
+        bev_only=True
         )
     
-    for i, data in enumerate(train_loader):
-        print(f"\r Generating BEV Feature: {i+1}/{len(train_loader)}", end="")
+    for i, data in enumerate(val_loader):
+        print(f"\r Generating BEV Feature: {i+1}/{len(val_loader)}", end="")
             
-        sample_idx = data["img_metas"][0].data[0][0]["sample_idx"]
+        sample_idx = data["img_metas"].data[0][0][2]["sample_idx"]
         bev = bcg.get_bev_embeds(data)
 
-        torch.save(bev, f"./thesis_bevformer/data/bev_features/tiny/train/{sample_idx}.pt")
+        torch.save(bev, f"./thesis_bevformer/data/bev_features/tiny/val/{sample_idx}.pt")
     
 
 if __name__ == "__main__":

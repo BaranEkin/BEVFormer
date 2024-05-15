@@ -17,10 +17,12 @@ class BEVCapGen(nn.Module):
         hidden_size,
         encoder_width,
         prompt="",
-        device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+        bev_only=False
     ):
         super().__init__()
         self.device = device
+        self.bev_only = bev_only
 
         self.bev_size = bev_feature_size * bev_area
 
@@ -29,25 +31,26 @@ class BEVCapGen(nn.Module):
         for param in self.bev_encoder.parameters():
             param.requires_grad = False
 
-        # FC layer to map BEV feature size to cross attention width
-        self.bev_feature_mapper = nn.Linear(bev_feature_size, encoder_width).to(self.device)
+        if not self.bev_only:
+            # FC layer to map BEV feature size to cross attention width
+            self.bev_feature_mapper = nn.Linear(bev_feature_size, encoder_width).to(self.device)
 
-        # Projectors for bev and text to a common dimension for contrastive loss
-        projection_dim = 512
-        self.bev_projector = nn.Linear(self.bev_size, projection_dim).to(self.device)
-        self.text_projector = nn.Linear(hidden_size, projection_dim).to(self.device)
-        self.logit_scale = nn.Parameter(torch.tensor(2.6592)).to(self.device)
+            # Projectors for bev and text to a common dimension for contrastive loss
+            projection_dim = 512
+            self.bev_projector = nn.Linear(self.bev_size, projection_dim).to(self.device)
+            self.text_projector = nn.Linear(hidden_size, projection_dim).to(self.device)
+            self.logit_scale = nn.Parameter(torch.tensor(2.6592)).to(self.device)
 
-        # Text decoder and tokenizer
-        self.text_decoder = text_decoder.to(self.device)
-        self.tokenizer = tokenizer
+            # Text decoder and tokenizer
+            self.text_decoder = text_decoder.to(self.device)
+            self.tokenizer = tokenizer
 
-        # BEV-Text Matching Head
-        self.btm_head = nn.Linear(hidden_size, 2).to(self.device)
-        
-        # Prompt
-        self.prompt = prompt
-        self.prompt_length = len(self.tokenizer(self.prompt).input_ids) - 1
+            # BEV-Text Matching Head
+            self.btm_head = nn.Linear(hidden_size, 2).to(self.device)
+            
+            # Prompt
+            self.prompt = prompt
+            self.prompt_length = len(self.tokenizer(self.prompt).input_ids) - 1
 
     def forward(self, data, caption):
 
@@ -113,11 +116,11 @@ class BEVCapGen(nn.Module):
     
     def get_bev_embeds(self, data):
         new_data = {}
-        new_data["img_metas"] = data["img_metas"][0].data
-        new_data["img"] = [data["img"][0].data[0].to(self.device)]
+        new_data["img_metas"] = data["img_metas"].data[0] # img_metas = [{0: {}, 1:{}, 2:{}}]
+        new_data["img"] = data["img"].data[0].to(self.device) # img = tensor (bs=1, qs=3, mview=6, c=3, h=480, w=800)
 
-        bev_embeds = self.bev_encoder(return_loss=False, rescale=True, only_bev_embed=True, **new_data)
-        return bev_embeds
+        outs = self.bev_encoder(only_bev=True, **new_data)
+        return outs["bev_embeds"], outs["all_bbox_preds"]
 
     def generate(
         self,
