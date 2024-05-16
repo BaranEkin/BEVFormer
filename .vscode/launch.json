@@ -45,6 +45,30 @@
             },
             "console": "integratedTerminal",
             "stopOnEntry": false,
+        },
+        {
+            "name": "Test Debugging",
+            "type": "python",
+            "python": "/root/miniconda3/envs/bin/python",
+            "request": "launch",
+            "module": "torch.distributed.launch",
+            "args": [
+                "--nproc_per_node=1",
+                "--master_port=29503",
+                "./tools/test.py",
+                "${workspaceFolder}/projects/configs/bevformer/bevformer_tiny.py",
+                "${workspaceFolder}/ckpts/bevformer_tiny_epoch_24.pth",
+                "--launcher",
+                "pytorch",
+                "--eval",
+                "bbox",
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"
+            },
+            "console": "integratedTerminal",
+            "stopOnEntry": false,
         }
     ]
 }

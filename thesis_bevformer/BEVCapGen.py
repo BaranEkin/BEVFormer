@@ -119,8 +119,20 @@ class BEVCapGen(nn.Module):
         new_data["img_metas"] = data["img_metas"].data[0] # img_metas = [{0: {}, 1:{}, 2:{}}]
         new_data["img"] = data["img"].data[0].to(self.device) # img = tensor (bs=1, qs=3, mview=6, c=3, h=480, w=800)
 
-        outs = self.bev_encoder(only_bev=True, **new_data)
-        return outs["bev_embeds"], outs["all_bbox_preds"]
+        bev_embeds, det_centers = self.bev_encoder(only_bev=True, **new_data)
+
+        det_centers_bev = torch.trunc((det_centers + 51.2) / 2.048).int()
+        det_idx = det_centers_bev[:, 0] + (det_centers_bev[:, 1] * 50)
+
+        det_embeds = torch.index_select(bev_embeds.squeeze(), 0, det_idx.flatten().to(self.device))
+        
+        """
+        # Visualization
+        A = torch.zeros((50, 50))
+        A[det_centers_bev[:, 1].long(), det_centers_bev[:, 0].long()] += 1
+        """
+
+        return bev_embeds, det_embeds
 
     def generate(
         self,

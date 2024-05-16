@@ -46,9 +46,10 @@ def main():
         print(f"\r Generating BEV Feature: {i+1}/{len(val_loader)}", end="")
             
         sample_idx = data["img_metas"].data[0][0][2]["sample_idx"]
-        bev = bcg.get_bev_embeds(data)
+        bev, dets = bcg.get_bev_embeds(data)
 
-        torch.save(bev, f"./thesis_bevformer/data/bev_features/tiny/val/{sample_idx}.pt")
+        torch.save(bev, f"./thesis_bevformer/data/bev_features_t/val/{sample_idx}.pt")
+        torch.save(dets, f"./thesis_bevformer/data/bev_features_t/val/{sample_idx}_det.pt")
     
 
 if __name__ == "__main__":

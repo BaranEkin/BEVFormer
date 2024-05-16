@@ -307,6 +307,12 @@ class BEVFormer(MVXTwoStageDetector):
         img_metas = [each[len_queue-1] for each in img_metas]
         if not img_metas[0]['prev_bev_exists']:
             prev_bev = None
+
         img_feats = self.extract_feat(img=img, img_metas=img_metas)
+
         outs = self.pts_bbox_head(img_feats, img_metas, prev_bev)
-        return outs
+
+        bbox_list = self.pts_bbox_head.get_bboxes(outs, img_metas)
+        bbox_results = [bbox3d2result(bboxes, scores, labels) for bboxes, scores, labels in bbox_list]
+
+        return outs["bev_embed"], bbox_results[0]["boxes_3d"].center[:, :-1]
